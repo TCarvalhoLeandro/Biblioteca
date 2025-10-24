@@ -13,6 +13,19 @@ public class Livro {
 	}
 	
 	public Livro(int isbn, String titulo, String autor, int ano, boolean disponivel) {
+		// Regra de Negócio/Validação Intrínseca
+		if(isbn <= 0) {
+			throw new IllegalArgumentException("ISBN deve ser positivo.");
+		}
+		if(titulo == null || titulo.trim().isEmpty()) {
+			throw new IllegalArgumentException("Titulo é obrigatorio.");
+		}
+		if(autor == null || autor.trim().isEmpty()) {
+			throw new IllegalArgumentException("Autor é  obrigatorio.");
+		}
+		if(ano <= 1900 ||ano > 2025) {
+			throw new IllegalArgumentException("Ano inválido.");
+		}
 		this.isbn = isbn;
 		this.titulo = titulo;
 		this.autor = autor;

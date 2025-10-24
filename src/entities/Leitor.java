@@ -51,7 +51,7 @@ public class Leitor {
 	}
 	
 	public String toString() {
-		return nome;
+		return String.format("%s - %s - (%s) - %s", id, nome, cpf, email); 
 	}
 	
 	

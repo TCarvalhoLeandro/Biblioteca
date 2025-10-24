@@ -51,7 +51,7 @@ public class Biblioteca {
 	public void setEmprestimos(ArrayList<Emprestimo> emprestimos) {
 		this.emprestimos = emprestimos;
 	}
-	
+	/*METODO PARA CADASTRAR LIVRO*/
 	public void cadastrarLivro(Livro livro) throws DadosExceptions{
 		if(this.livros != null) {
 			for(Livro obj: this.livros) {
@@ -63,6 +63,20 @@ public class Biblioteca {
 		livros.add(livro);
 		
 	}
+	
+	/*METODO PARA CADASTRAR LEITOR*/
+	public void cadastrarLeitor(Leitor leitor) throws DadosExceptions{
+		if(this.leitores != null) {
+			for(Leitor obj: this.leitores) {
+				if(obj.getId() == leitor.getId()) {
+					throw new DadosExceptions("Leitor já exixte.");
+				}
+			}
+		}
+		leitores.add(leitor);
+		
+	}
+	
 	/*METODO PARA LISTAR OS LIVROS*/
 	/*.indexOf() retorna a posição do objeto na lista*/
 	public void listarLivros() {
@@ -72,6 +86,20 @@ public class Biblioteca {
 			}
 		}
 	}
+	
+	/*METODO PARA LISTAR OS LEITOR*/
+	/*.indexOf() retorna a posição do objeto na lista*/
+	public void listarLeitor() {
+		if(this.leitores != null) {
+			for(Leitor obj: this.leitores) {
+				System.out.println(obj);
+			}
+		}
+	}
+	
+	
+	
+	
 	/*METODO PARA REMOVER UM LIVRO*/
 	public void removerLivro(String titulo) {
 		if(this.livros != null) {
@@ -82,6 +110,24 @@ public class Biblioteca {
 				}
 				/*Se a lista estiver vazia retorna para onde chamou*/
 				if(livros.isEmpty()) {
+					System.out.println("Lista vazia");
+					return;
+
+				}
+			}
+		}
+	}
+	
+	/*METODO PARA REMOVER UM LEITOR*/
+	public void removeLeitor(int id) {
+		if(this.leitores != null) {
+			for(Leitor obj: this.leitores) {
+				/*Use .equals(...) para comparar conteúdo de Strings*/
+				if(obj.getId() == id) {
+					leitores.remove(obj);
+				}
+				/*Se a lista estiver vazia retorna para onde chamou*/
+				if(leitores.isEmpty()) {
 					System.out.println("Lista vazia");
 					return;
 
@@ -113,6 +159,27 @@ public class Biblioteca {
 		return resultados;
 	}
 	
+	/*METODO PARA BUCAR LEITOR POR ID*/
+	/*Para buscar leitor por id eu tenho que criar um arraylist do tipo livro
+	 * pra armazenar o leitor que correspondem a palavra chave*/
+	public ArrayList<Leitor> buscaLeitor(int id) {
+		/*ArrayList criado*/
+		ArrayList<Leitor> resultados = new ArrayList<>();
+		
+		/*tratando erro*/
+		if(this.leitores == null) {
+			return resultados;
+		}
+		
+		/*Iterando no ArrayList livros*/
+		for(Leitor obj: this.leitores) {
+			if(obj != null) {
+				resultados.add(obj);
+			}
+		}
+		return resultados;
+	}
+	
 	public void registrarEmprestimo() {
 		
 	}
@@ -129,6 +196,23 @@ public class Biblioteca {
 			for(Livro livro: this.livros) {
 				String linha = livro.getIsbn()  + ";" + livro.getTitulo() + ";" + livro.getAutor()
 				+ ";" +  livro.getAno();
+				
+				bw.write(linha);
+				bw.newLine();
+			}
+			
+		}
+	}
+	
+
+	/*METODO PARA SALVAR ARQUIVO TXT*/
+	public void salvarLeitor(String nomeArquivo) throws IOException{
+		
+		try(BufferedWriter bw = new BufferedWriter(new FileWriter(nomeArquivo))){
+			
+			for(Leitor leitor: this.leitores) {
+				String linha = leitor.getId()  + ";" + leitor.getNome() + ";" + leitor.getCpf()
+				+ ";" +  leitor.getEmail();
 				
 				bw.write(linha);
 				bw.newLine();
@@ -157,6 +241,33 @@ public class Biblioteca {
 					
 					livros.add(livro);
 					
+				}
+			}
+		}
+	}
+
+
+
+/*METODO PARA CARREGAR ARQUIVO TXT*/
+public void carregaLeitor(String nomeArquivo) throws IOException{
+	
+	leitores.clear();// limpa o Array de livros
+	String linha;
+	
+	try(BufferedReader br = new BufferedReader(new FileReader(nomeArquivo))){
+		while((linha = br.readLine()) != null) {
+			String[] partes = linha.split(";");
+			
+			if(partes.length == 4) {
+				int id = Integer.parseInt(partes[0]);
+				String nome = partes[1];
+				String cpf = partes[2];
+				String email = partes[3];
+				
+				Leitor leitor = new Leitor(id, nome, cpf, email);
+				
+				leitores.add(leitor);
+				
 				}
 			}
 		}
