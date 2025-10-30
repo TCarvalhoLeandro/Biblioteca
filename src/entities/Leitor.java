@@ -2,15 +2,16 @@ package entities;
 
 public class Leitor {
 	
-	private int id;
-	private String nome;
-	private String cpf;
-	private String email;
+	private int id;//id do leitor
+	private String nome;// nome do leitor
+	private String cpf;//cpf do leitor
+	private String email;//email do leitor
 	
 	public Leitor() {
-		
+		//construtor padrão
 	}
-	
+
+	//construtor com todos os argumentos
 	public Leitor(int id, String nome, String cpf, String email) {
 		this.id = id;
 		this.nome = nome;
@@ -50,8 +51,9 @@ public class Leitor {
 		this.email = email;
 	}
 	
+	@Override
 	public String toString() {
-		return String.format("%s - %s - (%s) - %s", id, nome, cpf, email); 
+		return id + " - " + nome + " - (" + cpf + ") - " + email;
 	}
 	
 	

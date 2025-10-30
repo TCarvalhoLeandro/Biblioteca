@@ -7,7 +7,7 @@ import entities.Livro;
 
 public class Emprestimo {
 	
-	private int id;
+	private int id;// id do emprestimo
 	private Leitor leitor;
 	private Livro livro;
 	private LocalDate dataEmprestimo;
@@ -15,9 +15,17 @@ public class Emprestimo {
 	private boolean devolvido;
 	
 	public Emprestimo() {
-		
+		//construtor padrão
 	}
-	
+	public Emprestimo(int id, Leitor leitor, Livro livro, LocalDate dataEmprestimo,
+			boolean devolvido) {
+		this.id = id;
+		this.leitor = leitor;
+		this.livro = livro;
+		this.dataEmprestimo = dataEmprestimo;
+		this.devolvido = devolvido;
+	}
+
 	public Emprestimo(int id, Leitor leitor, Livro livro, LocalDate dataEmprestimo, LocalDate dataDevolucao,
 			boolean devolvido) {
 		this.id = id;
@@ -77,11 +85,20 @@ public class Emprestimo {
 	}
 	
 	public void registrarDevolucao() {
-		
+		this.dataDevolucao = LocalDate.now();
 	}
 	
 	public long diasAtrasados() {
 		return 1;
+	}
+	
+	
+	public String toStringEmprestimo() {
+		return id + " - " + leitor.getNome() + " - " + livro.getTitulo() + " - " + dataEmprestimo ;
+	}
+	
+	public String toStringDevolucao() {
+		return id + " - " + leitor.getNome() + " - " + livro.getTitulo() + " - " + dataEmprestimo + " - " + dataDevolucao;
 	}
 	
 }

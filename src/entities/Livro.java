@@ -2,43 +2,31 @@ package entities;
 
 public class Livro {
 	
-	private int isbn;
-	private String titulo;
-	private String autor;
-	private int ano;
-	private boolean disponivel;
+	private int id;// id do livro
+	private String titulo;//nome do livro
+	private String autor;//nome do autor
+	private int ano;//ano de publicação
+	private boolean disponivel;//disponibilidade do livro
 	
 	public Livro() {
-		
+		//construtor padrao
 	}
 	
-	public Livro(int isbn, String titulo, String autor, int ano, boolean disponivel) {
-		// Regra de Negócio/Validação Intrínseca
-		if(isbn <= 0) {
-			throw new IllegalArgumentException("ISBN deve ser positivo.");
-		}
-		if(titulo == null || titulo.trim().isEmpty()) {
-			throw new IllegalArgumentException("Titulo é obrigatorio.");
-		}
-		if(autor == null || autor.trim().isEmpty()) {
-			throw new IllegalArgumentException("Autor é  obrigatorio.");
-		}
-		if(ano <= 1900 ||ano > 2025) {
-			throw new IllegalArgumentException("Ano inválido.");
-		}
-		this.isbn = isbn;
+	//construtor com todos os atributos
+	public Livro(int id, String titulo, String autor, int ano, boolean disponivel) {
+		this.id = id;
 		this.titulo = titulo;
 		this.autor = autor;
 		this.ano = ano;
 		this.disponivel = disponivel;
 	}
 
-	public int getIsbn() {
-		return isbn;
+	public int getId() {
+		return id;
 	}
 
-	public void setIsbn(int isbn) {
-		this.isbn = isbn;
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	public String getTitulo() {
@@ -73,15 +61,18 @@ public class Livro {
 		this.disponivel = disponivel;
 	}
 	
-	public boolean emprestar() {
-		return false;
+	public void emprestar() {
+		setDisponivel(false);
 	}
 	
-	public boolean devolver() {
-		return true;
+	public void devolver() {
+		setDisponivel(true);
 	}
 	
-	public String toString() {
-		return String.format("%d - %s - (%s) - %d", isbn, titulo, autor, ano); 
+	@Override
+	public String toString(){
+		 return id + " - " + titulo + " - "+ autor + " - " + ano; 
 	}
+	
+	
 }
