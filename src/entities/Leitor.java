@@ -1,14 +1,19 @@
 package entities;
 
-public class Leitor {
+import service.Salvar;
+
+public class Leitor implements Salvar{// implemetando a interface Salvar
+	
+	private static int contador = 0;
 	
 	private int id;//id do leitor
 	private String nome;// nome do leitor
 	private String cpf;//cpf do leitor
 	private String email;//email do leitor
 	
+	//construtor padrão
 	public Leitor() {
-		//construtor padrão
+		contador++;
 	}
 
 	//construtor com todos os argumentos
@@ -17,6 +22,7 @@ public class Leitor {
 		this.nome = nome;
 		this.cpf = cpf;
 		this.email = email;
+		contador++;
 	}
 
 	public int getId() {
@@ -51,10 +57,26 @@ public class Leitor {
 		this.email = email;
 	}
 	
+	public static int getContador() {
+		return contador;
+	}
+	public static void setContador(int cont) {
+		contador = cont;
+	}
+	
+	/*METODO INTERFACE PRA SALVAR EM .CSV*/
+	@Override
+	public String toCSV() {
+		return id + ";" 
+				  + nome 
+				  + ";" 
+				  + cpf 
+				  + ";" 
+				  + email;
+	}
+	
 	@Override
 	public String toString() {
 		return id + " - " + nome + " - (" + cpf + ") - " + email;
 	}
-	
-	
 }

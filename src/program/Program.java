@@ -1,19 +1,26 @@
 package program;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import domainException.DadosException;
 import entities.Leitor;
 import entities.Livro;
 import service.Biblioteca;
+import service.CSVUtil;
 import service.Emprestimo;
 
 /*FALTA FAZER
- * leitura e salvar em arquivo
- * tratar as exceções*/
+
+ * tratar as exceções
+ * validar cpf
+ * validar email
+ * calcular dias atrasados
+ * calcular a multa por atraso*/
 
 public class Program {
 
@@ -21,17 +28,21 @@ public class Program {
 		
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		
-		Biblioteca biblioteca = new Biblioteca();// Instanciar Biblioteca apenas uma vez
-		DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		Biblioteca biblioteca = new Biblioteca();// Instanciar biblioteca apenas uma vez
+		biblioteca.carregarArquivo();// carrega os arquivos  .csv
+		/*Os arquivos são carregados e só podem ser modificados atraves dos menus*/
+		
+		DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");// formato de data 
+		
 		/*Loop do programa de interação com o usuario*/
 		while(true){
 			try {
-				System.out.println("=-".repeat(20) + " BIBLIOTECA " + "=-".repeat(19) + "="); 
-				System.out.println("[0] - Sair");
-				System.out.println("[1] - Gerenciar Livros");
-				System.out.println("[2] - Gerenciar Leitores");
-				System.out.println("[3] - Emprestimos e Devolucoes");
-				System.out.println("[4] - Salvar e Carregar Dados");
+				System.out.println("=".repeat(15) + " BIBLIOTECA " + "=".repeat(15)); 
+				System.out.println("0 - Sair");
+				System.out.println("1 - Livros");
+				System.out.println("2 - Leitores");
+				System.out.println("3 - Emprestimos e Devolucoes");
+				System.out.println("4 - Salvar e Carregar");
 				System.out.println();
 				System.out.print("Digite a opção desejada: ");	
 				int opcao = Integer.parseInt(br.readLine());
@@ -39,12 +50,12 @@ public class Program {
 				switch(opcao) {// switch externo (menu principal)
 				case 1: 
 					while(true) {//O while(true) mantém o usuário dentro do menu de livros.
-						System.out.println("=".repeat(20) + " LIVROS " + "=".repeat(20));
-						System.out.println("[0] - Voltar");
-						System.out.println("[1] - Cadastrar Livro");
-						System.out.println("[2] - Listar Livros");
-						System.out.println("[3] - Remover Livro");
-						System.out.println("[4] - Buscar Livro");
+						System.out.println("=".repeat(15) + " LIVROS " + "=".repeat(15));
+						System.out.println("0 - Voltar");
+						System.out.println("1 - Cadastrar ");
+						System.out.println("2 - Listar");
+						System.out.println("3 - Remover");
+						System.out.println("4 - Buscar");
 						System.out.println();
 						System.out.print("Digite a opcao desejada: ");
 						int opcao1 = Integer.parseInt(br.readLine());
@@ -98,12 +109,12 @@ public class Program {
 					break;// switch externo (Gerenciar Livros) case 1
 				case 2:
 					while(true) {//O while(true) mantém o usuário dentro do menu de leitores.
-						System.out.println("=".repeat(20) + " LEITORES " + "=".repeat(20));
-						System.out.println("[0] - Voltar");
-						System.out.println("[1] - Cadastrar Leitor");
-						System.out.println("[2] - Listar Leitores");
-						System.out.println("[3] - Remover Leitor");
-						System.out.println("[4] - Buscar Leitor");
+						System.out.println("=".repeat(15) + " LEITORES " + "=".repeat(15));
+						System.out.println("0 - Voltar");
+						System.out.println("1 - Cadastrar ");
+						System.out.println("2 - Listar ");
+						System.out.println("3 - Remover ");
+						System.out.println("4 - Buscar ");
 						System.out.println();
 						System.out.print("Digite a opcao desejada: ");
 						int opcao2 = Integer.parseInt(br.readLine());
@@ -154,11 +165,11 @@ public class Program {
 				
 				case 3:
 					while(true) {
-						System.out.println("=".repeat(20) + " EMPRESTIMOS E DEVOLUCOES " + "=".repeat(20));
-						System.out.println("[0] - Voltar");
-						System.out.println("[1] - Emprestimo: ");
-						System.out.println("[2] - Listar emprestimo: ");
-						System.out.println("[2] - Devolucao: ");
+						System.out.println("=".repeat(15) + " EMPRESTIMOS E DEVOLUCOES " + "=".repeat(15));
+						System.out.println("0 - Voltar");
+						System.out.println("1 - Emprestimo ");
+						System.out.println("2 - Listar ");
+						System.out.println("3 - Devolucao ");
 						System.out.println();
 						System.out.print("Digite a opcao desejada: ");
 						int opcao3 = Integer.parseInt(br.readLine());
@@ -217,7 +228,76 @@ public class Program {
 						}
 					}
 					break;// switch externo (Emprestimo e Devolucoes) case 3
-				
+				case 4:
+					while(true) {//O while(true) mantém o usuário dentro do menu de salvar e carregar.
+						System.out.println("=".repeat(15) + " SALVAR E CARREGAR " + "=".repeat(15));
+						System.out.println("0 - Voltar");
+						System.out.println("1 - Salvar ");
+						System.out.println("2 - Carregar ");
+						System.out.println();
+						System.out.print("Digite a opcao desejada: ");
+						int opcao4 = Integer.parseInt(br.readLine());
+						System.out.println();
+						switch (opcao4) {// switch interno (menu salvar e carregar)
+						case 1:
+							/*salvar todas as listas*/
+							  try {
+								  	if(Livro.getContador() > 0) {// só vai escrever no arquivo se for instanciado
+								  		CSVUtil.salvarCSV(biblioteca.getLivros(), "livros.csv");
+								  		Livro.setContador(0);// salvou no arquivo zera o contador
+								  	}
+							        if(Leitor.getContador() > 0) {// só vai escrever no arquivo se for instanciado
+							        	CSVUtil.salvarCSV(biblioteca.getLeitores(), "leitores.csv");
+							        	Leitor.setContador(0);// salvou no arquivo zera o contador
+							        }
+							        if(Emprestimo.getContador() > 0) {// só vai escrever no arquivo se for instanciado
+							        	CSVUtil.salvarCSV(biblioteca.getEmprestimos(), "emprestimos.csv");
+							        	Emprestimo.setContador(0);// salvou no arquivo zera o contador
+							        }
+							        System.out.println("Dados salvos com sucesso!");
+							  }
+							  catch (IOException e) {
+							       System.out.println("Erro ao salvar: " + e.getMessage());
+							  }
+							
+							break; //case 1
+						case 2:
+							List<Livro> livros = CSVUtil.lerLivroCSV("/home/leandro/eclipse-workspace/Biblioteca/livros.csv");
+							for(Livro livro: livros) {
+								System.out.println(livro);
+							}
+							System.out.println();
+							System.out.println("=".repeat(25));
+							System.out.println();
+							
+							List<Leitor> leitores = CSVUtil.lerLeitorCSV("/home/leandro/eclipse-workspace/Biblioteca/leitores.csv");
+							for(Leitor leitor: leitores) {
+								System.out.println(leitor);
+							}
+							System.out.println();
+							System.out.println("=".repeat(25));
+							System.out.println();
+							List<Emprestimo> emprestimos = CSVUtil.lerEmprestimoCSV("/home/leandro/eclipse-workspace/Biblioteca/emprestimos.csv",
+									leitores, livros);
+							for(Emprestimo emprestimo: emprestimos) {
+								System.out.println(emprestimo);
+							}
+							System.out.println();
+							System.out.println("=".repeat(25));
+							System.out.println();
+							break;
+						
+						default:
+							if(opcao4 != 0) System.out.println("Digito invalido.");
+						}//switch interno(menu salvar e carregar)
+						
+						//O if (opcao2 == 0) break; faz sair do loop (e voltar pro menu principal).
+						if(opcao4 == 0) {
+							System.err.println("Voltando ao menu anterior..");
+							break;
+						}
+					}
+					break;// switch externo (salvar e carregar) case 4
 				default:
 					if(opcao != 0) System.out.println("Digito invalido.");
 					break;
@@ -229,7 +309,7 @@ public class Program {
 				}
 			}// fim try
 			catch(DadosException e) {
-				System.out.println("Erro: " + e.getMessage());
+				System.out.println(e.getMessage());
 			}
 			catch(NumberFormatException e) {
 				System.out.println("Digite um numero valido");

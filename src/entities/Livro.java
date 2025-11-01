@@ -1,6 +1,10 @@
 package entities;
 
-public class Livro {
+import service.Salvar;
+
+public class Livro implements Salvar{// implemetando a interface Salvar
+	
+	private static int contador = 0;
 	
 	private int id;// id do livro
 	private String titulo;//nome do livro
@@ -8,8 +12,9 @@ public class Livro {
 	private int ano;//ano de publicação
 	private boolean disponivel;//disponibilidade do livro
 	
+	//construtor padrao
 	public Livro() {
-		//construtor padrao
+		contador++;
 	}
 	
 	//construtor com todos os atributos
@@ -19,6 +24,7 @@ public class Livro {
 		this.autor = autor;
 		this.ano = ano;
 		this.disponivel = disponivel;
+		contador++;
 	}
 
 	public int getId() {
@@ -61,18 +67,28 @@ public class Livro {
 		this.disponivel = disponivel;
 	}
 	
-	public void emprestar() {
-		setDisponivel(false);
+	public static int getContador() {
+		return contador;
+	}
+	public static void setContador(int cont) {
+		contador = cont;
 	}
 	
-	public void devolver() {
-		setDisponivel(true);
+	/*METODO INTERFACE PRA SALVAR EM .CSV*/
+	@Override
+	public String toCSV() {
+		return id + ";" 
+				  + titulo 
+				  + ";" 
+				  + autor 
+				  + ";" 
+				  + ano 
+				  + ";" 
+				  + disponivel;
 	}
 	
 	@Override
 	public String toString(){
-		 return id + " - " + titulo + " - "+ autor + " - " + ano; 
+		 return id + " - " + titulo + " - "+ autor + " - " + ano + " - " + disponivel; 
 	}
-	
-	
 }

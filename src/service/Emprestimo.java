@@ -5,7 +5,9 @@ import java.time.LocalDate;
 import entities.Leitor;
 import entities.Livro;
 
-public class Emprestimo {
+public class Emprestimo implements Salvar{// implemetando a interface Salvar
+	
+	private static int contador = 0;
 	
 	private int id;// id do emprestimo
 	private Leitor leitor;
@@ -14,8 +16,9 @@ public class Emprestimo {
 	private LocalDate dataDevolucao;
 	private boolean devolvido;
 	
+	//construtor padrão
 	public Emprestimo() {
-		//construtor padrão
+		contador++;
 	}
 	public Emprestimo(int id, Leitor leitor, Livro livro, LocalDate dataEmprestimo,
 			boolean devolvido) {
@@ -24,6 +27,7 @@ public class Emprestimo {
 		this.livro = livro;
 		this.dataEmprestimo = dataEmprestimo;
 		this.devolvido = devolvido;
+		contador++;
 	}
 
 	public Emprestimo(int id, Leitor leitor, Livro livro, LocalDate dataEmprestimo, LocalDate dataDevolucao,
@@ -88,16 +92,48 @@ public class Emprestimo {
 		this.dataDevolucao = LocalDate.now();
 	}
 	
+	public static int getContador() {
+		return contador;
+	}
+	public static void setContador(int cont) {
+		contador = cont;
+	}
+	
+	
 	public long diasAtrasados() {
 		return 1;
 	}
 	
+	/*METODO INTERFACE PRA SALVAR EM .CSV*/
+	@Override
+	public String toCSV() {
+		/*dataDevolucao diferente de null?
+		 * SIM: dataDev = dataDevolucao.toString()
+		 * NAO: dataDev = " "*/
+		String dataDev = (dataDevolucao != null) ? dataDevolucao.toString() : "";
+		return id + ";" 
+				  + leitor.getId() 
+				  + ";" 
+				  + livro.getId() 
+				  + ";" 
+				  + dataEmprestimo 
+				  + ";" 
+				  + dataDev 
+				  + ";" 
+				  + devolvido;
+	}
 	
+	/*=================================>> MELHORAR ESSA PARTE*/
 	public String toStringEmprestimo() {
 		return id + " - " + leitor.getNome() + " - " + livro.getTitulo() + " - " + dataEmprestimo ;
 	}
 	
 	public String toStringDevolucao() {
+		return id + " - " + leitor.getNome() + " - " + livro.getTitulo() + " - " + dataEmprestimo + " - " + dataDevolucao;
+	}
+	
+	@Override
+	public String toString() {
 		return id + " - " + leitor.getNome() + " - " + livro.getTitulo() + " - " + dataEmprestimo + " - " + dataDevolucao;
 	}
 	

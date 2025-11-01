@@ -1,7 +1,9 @@
 package service;
 
+
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import domainException.DadosException;
@@ -10,17 +12,32 @@ import entities.Livro;
 
 public class Biblioteca {
 
-	private List<Livro> livros = new ArrayList<>();// lista de livros
-	private List<Leitor> leitores = new ArrayList<>();// lista de leitores
-	private List<Emprestimo> emprestimos = new ArrayList<>();// lista de emprestimos
-	//construtor padrao
+	private List<Livro> livros = new ArrayList<Livro>();// lista de livros
+	private List<Leitor> leitores = new ArrayList<Leitor>();// lista de leitores
+	private List<Emprestimo> emprestimos = new ArrayList<Emprestimo>();// lista de emprestimos
+	
+	/*construtor padrão*/
 	public Biblioteca() {
 		
 	}
-	//construtor com argumentos
+	
+	//construtor com listas usado para criar livros novos
 	public Biblioteca(List<Livro> livros, List<Leitor> leitores, List<Emprestimo> emprestimos) {
 		this.livros = livros;
 		this.leitores = leitores;
+		this.emprestimos = emprestimos;
+	}
+
+	/*GETTERS SETTERS*/
+	public void setLivros(List<Livro> livros) {
+		this.livros = livros;
+	}
+
+	public void setLeitores(List<Leitor> leitores) {
+		this.leitores = leitores;
+	}
+
+	public void setEmprestimos(List<Emprestimo> emprestimos) {
 		this.emprestimos = emprestimos;
 	}
 
@@ -36,9 +53,7 @@ public class Biblioteca {
 		return emprestimos;
 	}
 	
-	public void menuLivro() throws IOException {
-		
-	}
+	
 	
 	/*CADASTRAR LIVROS*/
 	public void cadastrarLivro(Livro livro) {
@@ -53,7 +68,7 @@ public class Biblioteca {
 			
 		}
 		for(Livro livro: livros) {
-			System.out.println(livro.getId() + " - " + livro.getTitulo() + " - " + livro.getAutor() + " - " + livro.getAno());
+			System.out.println(livro);
 		}
 	}
 	
@@ -171,7 +186,7 @@ public class Biblioteca {
 		if(livro.isDisponivel()) {
 			emprestimos.add(emprestimo);
 			//marca o livro como emprestado
-			livro.emprestar();
+			livro.setDisponivel(false);
 			System.out.println("Empréstimo cadastrado com sucesso.");
 		}
 		else {
@@ -197,33 +212,62 @@ public class Biblioteca {
 	
 	/*DEVOLUCAO*/
 	public void devolucao(String tituloLivro) {
-		for(Emprestimo emp: emprestimos) {
-			//Ache o emprestimo ativo(ainda não devolvido)
-			if(emp.getLivro().getTitulo().trim().equalsIgnoreCase(tituloLivro.trim()) && emp.getDataDevolucao() == null) {
-				emp.registrarDevolucao(); //marca a data da devolucao
-				emp.getLivro().setDisponivel(true);// deixa o livro didponivel
-				System.out.println("Devolucao registrada com sucesso");
-				System.out.println(emp.toStringDevolucao());
-		        System.out.println();
-		        return;
-			}
-		}
-		System.out.println("Nenhum empréstimo ativo encontrado para este livro.");
-	}
-	
-	
-	
-	public void salvarDados() {
+		boolean devolvido = false;
 		
-	}
-	public void carregarDados() {
+		/*Um Iterator é um objeto que permite percorrer uma coleção (List, Set, etc.) de forma segura.
+			Ele é parecido com o for-each, mas permite remover elementos da lista durante a iteração sem dar erro.*/
+		Iterator<Emprestimo> it = emprestimos.iterator();
 		
+		while(it.hasNext()) {// enquanto houver próximo elemento
+			/*it.hasNext() retorna true → existe um próximo elemento na lista.
+			  it.hasNext() retorna false → você já percorreu toda a lista, o loop termina.
+			  it.next() → retorna o próximo elemento da lista e avança o iterador.*/
+			Emprestimo emp = it.next();// pega o próximo elemento
+			
+	        if(emp.getLivro().getTitulo().trim().equalsIgnoreCase(tituloLivro.trim()) 
+	           && emp.getDataDevolucao() == null) {
+	            
+	            emp.registrarDevolucao();            	 	// marca a data da devolução
+	            emp.getLivro().setDisponivel(true);   		// deixa o livro disponível
+	
+	            System.out.println(emp.toStringDevolucao());
+	            /*hasNext() → “tem mais elementos pra percorrer?”
+				  next() → “me dá o próximo elemento”.
+				  remove() → remove o elemento retornado pelo next() de forma segura.*/
+	            
+	            it.remove(); 								 // remove com segurança do Iterator
+	
+	            // sobrescreve o arquivo com a lista atualizada
+	            try {
+	                CSVUtil.salvarCSV(emprestimos, "/home/leandro/eclipse-workspace/Biblioteca/emprestimos.csv");
+	            } catch (IOException e) {
+	                System.out.println("Erro ao atualizar arquivo: " + e.getMessage());
+	            }
+	
+	            System.out.println("Devolucao registrada com sucesso\n");
+	            devolvido = true;
+	            break;
+	        }
+	    }
+
+		if(!devolvido) {
+	        System.out.println("Nenhum empréstimo ativo encontrado para este livro.");
+	    }
 	}
-	
-	
-	
-	
-	
-	
-	
+
+	/*METODO PARA CARREGAR OS ARQUIVOS .CSV*/
+	public void carregarArquivo() {
+		try {
+			//Atualizo a biblioteca com os arquivos .csv
+	        setLivros(CSVUtil.lerLivroCSV("/home/leandro/eclipse-workspace/Biblioteca/livros.csv"));;
+	        setLeitores(CSVUtil.lerLeitorCSV("/home/leandro/eclipse-workspace/Biblioteca/leitores.csv"));
+	        setEmprestimos(CSVUtil.lerEmprestimoCSV("/home/leandro/eclipse-workspace/Biblioteca/emprestimos.csv", leitores, livros));
+	        System.out.println("Arquivos carregados com sucesso!");
+	        
+	    } catch (IOException e) {
+	        System.out.println("Erro ao carregar arquivos: " + e.getMessage());
+	    }
+	}
 }
+
+
