@@ -1,4 +1,4 @@
-package service;
+package biblioteca.core;
 
 
 import java.io.IOException;
@@ -6,9 +6,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import domainException.DadosException;
-import entities.Leitor;
-import entities.Livro;
+import biblioteca.domainException.DadosException;
+import biblioteca.entities.Emprestimo;
+import biblioteca.entities.Leitor;
+import biblioteca.entities.Livro;
+import biblioteca.util.CSVUtil;
 
 public class Biblioteca {
 
@@ -32,40 +34,40 @@ public class Biblioteca {
 	public void setLivros(List<Livro> livros) {
 		this.livros = livros;
 	}
-
 	public void setLeitores(List<Leitor> leitores) {
 		this.leitores = leitores;
 	}
-
 	public void setEmprestimos(List<Emprestimo> emprestimos) {
 		this.emprestimos = emprestimos;
 	}
-
 	public List<Livro> getLivros() {
 		return livros;
 	}
-
 	public List<Leitor> getLeitores() {
 		return leitores;
 	}
-
 	public List<Emprestimo> getEmprestimos() {
 		return emprestimos;
 	}
 	
-	
-	
 	/*CADASTRAR LIVROS*/
 	public void cadastrarLivro(Livro livro) {
+		if(!this.livros.isEmpty()) {// se a lista de livros nao estiver vazia
+			
+			for(Livro obj: livros) {// percorro a lista
+				if(obj.getId() == livro.getId()) {// se o id do livro da lista for igual ao id do livro passado
+					throw new DadosException("ID já existe. Digite outro.");
+				}
+			}
+		}
 		livros.add(livro);
 	}
 	
 	/*LISTAR LIVROS*/
 	public void listarLivro() {
-		//verifica se a lista está vazia
+		//Se a lista livros estiver vazia lança uma excecao
 		if(livros.isEmpty()) {
-			System.out.println("Lista de livros vazia");
-			
+			throw new DadosException("Lista vazia.");
 		}
 		for(Livro livro: livros) {
 			System.out.println(livro);
@@ -74,13 +76,14 @@ public class Biblioteca {
 	
 	/*REMOVER LIVROS*/
 	public void removerLivro(String nome) {
-		//verifica se a lista está vazia
+		//Se a lista livros estiver vazia lança uma excecao
 		if(livros.isEmpty()) {
-			System.out.println("Lista de livros vazia");
-			
+			throw new DadosException("Lista vazia.");
 		}
+		
 		// É errado remover um objeto enquanto itera a lista
 		Livro livroParaRemover = null;
+		
 		for(Livro livro: livros) {
 			if(livro.getTitulo().equalsIgnoreCase(nome))
 				livroParaRemover = livro; // encontrou o livro
@@ -98,23 +101,23 @@ public class Biblioteca {
 	
 	/*BUSCAR LIVROS*/
 	public Livro buscarLivro(int id) throws DadosException{
+		//Se a lista livros estiver vazia lança uma excecao
 		if(livros.isEmpty()) {
-			//System.out.println("Lista de livros vazia");
-			throw new DadosException("Lista de livros vazia");
-		}		
+			throw new DadosException("Lista vazia.");
+		}	
+		
 		Livro buscaLivro = null;
+		
 		for(Livro livro: livros) {
 			if(livro.getId() == id) {
 				buscaLivro = livro;
 				break;
 			}		
 		}
-		if(buscaLivro != null) {
-			return buscaLivro;
-		}
-		else {
-			throw new DadosException("Livro nao encontrado");
-		}
+		
+		if(buscaLivro != null) return buscaLivro;
+		else throw new DadosException("Livro nao encontrado");
+		
 	}
 	
 	/*CADASTRAR LEITOR*/
@@ -126,9 +129,8 @@ public class Biblioteca {
 	/*LISTAR LEITORES*/
 	public void listarLeitores() {
 		if(leitores.isEmpty()) {
-			System.out.println("Lista de leitores vazia.");
+			throw new DadosException("Lista de leitores vazia.");
 		}
-		
 		for(Leitor leitor: leitores) {
 			System.out.println(leitor);
 		}
@@ -154,16 +156,19 @@ public class Biblioteca {
 			leitores.remove(leitorRemove);
 			System.out.println("Leitor removido com sucesso.");
 		}
-		else System.out.println("Leitor não encontrado.");
+		else {
+			System.out.println("Leitor não encontrado.");
+		}
 	}
 	
 	/*BUSCAR LEITOR*/
-	public Leitor buscarLeitor(int id) throws DadosException{
+	public Leitor buscarLeitor(int id){
 		if(leitores.isEmpty()) {
-			//System.out.println("Lista de leitores vazia");
 			throw new DadosException("Lista de leitores vazia");
-		}		
+		}	
+		
 		Leitor buscaLeitor = null;
+		
 		for(Leitor leitor: leitores) {
 			if(leitor.getId() == id) {
 				buscaLeitor = leitor;
@@ -197,7 +202,6 @@ public class Biblioteca {
 	/*LISTAR EMPRESTIMO*/
 	public void listaEmprestimo() throws DadosException{		
 		if(emprestimos.isEmpty()) {
-			//System.out.println("Lista de emprestimos vazia.");
 			throw new DadosException("Lista de emprestimos vazia");
 		}
 		for(Emprestimo emp: emprestimos) {
@@ -210,7 +214,48 @@ public class Biblioteca {
 		}
 	}
 	
-	/*DEVOLUCAO*/
+	/*LISTAR EMPRESTIMO POR LEITOR*/
+	public List<Livro> listarLivrosDoLeitor(int idLeitor){
+		if(emprestimos.isEmpty()) {
+			throw new DadosException("Lista de emprestimos vazia.");
+		}
+		
+		//Lista para armazenar os livros emprestados para o leitor
+		List<Livro> livrosEmprt = new ArrayList<Livro>();
+		
+		//Itera a lista  Emprestimos
+		for(Emprestimo emprestimo: emprestimos) {
+			
+			//Verifica se o emprestimo pertence ao leitor procurado
+			//(Assumindo que a classe Emprestimo tem um método getLeitor() e Leitor tem um getId())
+			if(emprestimo.getLeitor().getId() == idLeitor && emprestimo.getLivro().isDisponivel() == false) {
+				//Adiciona o livro na lista
+				livrosEmprt.add(emprestimo.getLivro());
+			}
+		}
+		return livrosEmprt;
+	}
+	
+	/*LISTAR LIVRO COM LEITOR*/
+	public Leitor listarLeitorComLivro(int idLivro){
+		if(emprestimos.isEmpty()) {
+			throw new DadosException("Lista de emprestimos vazia.");
+		}
+		/*Assumindo que um livro so pode ser emprestado para uma pesso por vez*/
+		Leitor leitorEmprt = null;
+		
+		//Itera a lista  Emprestimos
+		for(Emprestimo emprestimo: emprestimos) {
+			//Verifica se o livro esta emprestado e pegar o leitor pra quem foi emprestado
+			if(emprestimo.getLivro().getId() == idLivro && emprestimo.getLivro().isDisponivel() == false) {
+				leitorEmprt = emprestimo.getLeitor();
+				break;
+			}
+		}
+		return leitorEmprt;
+	}
+	
+	/*DEVOLUCAO*/ //estudarr
 	public void devolucao(String tituloLivro) {
 		boolean devolvido = false;
 		

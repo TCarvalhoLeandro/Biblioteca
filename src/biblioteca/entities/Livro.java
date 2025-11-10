@@ -1,6 +1,6 @@
-package entities;
+package biblioteca.entities;
 
-import service.Salvar;
+import biblioteca.service.Salvar;
 
 public class Livro implements Salvar{// implemetando a interface Salvar
 	

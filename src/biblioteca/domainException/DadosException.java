@@ -1,4 +1,4 @@
-package domainException;
+package biblioteca.domainException;
 
 public class DadosException extends RuntimeException{
 

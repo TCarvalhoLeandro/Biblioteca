@@ -1,4 +1,4 @@
-package service;
+package biblioteca.service;
 
 public interface Salvar {
 	

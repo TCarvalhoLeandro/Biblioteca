@@ -1,11 +1,10 @@
-package service;
+package biblioteca.entities;
 
 import java.time.LocalDate;
 
-import entities.Leitor;
-import entities.Livro;
+import biblioteca.service.Salvar;
 
-public class Emprestimo implements Salvar{// implemetando a interface Salvar
+public class Emprestimo implements Salvar{// implementando a interface Salvar
 	
 	private static int contador = 0;
 	
@@ -38,6 +37,7 @@ public class Emprestimo implements Salvar{// implemetando a interface Salvar
 		this.dataEmprestimo = dataEmprestimo;
 		this.dataDevolucao = dataDevolucao;
 		this.devolvido = devolvido;
+		contador++;
 	}
 
 	public int getId() {

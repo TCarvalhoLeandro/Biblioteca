@@ -1,6 +1,4 @@
-package service;
-
-
+package biblioteca.util;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
@@ -10,44 +8,47 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import entities.Leitor;
-import entities.Livro;
+import biblioteca.entities.Emprestimo;
+import biblioteca.entities.Leitor;
+import biblioteca.entities.Livro;
+import biblioteca.service.Salvar;
 
-/*RESPONSAVEL POR SALVAR OS DADOS EM ARQUIVO*/
-/*Esse método público, que não retorna nada, recebe uma
- * lista de qualquer tipo que implemente Exportavel e um 
- * nome de arquivo, grava tudo em CSV, e pode lançar uma 
- * IOException se der erro no processo.*/
 
-/*EXPLICACAO DO METODO
- * 
- * public: O método pode ser chamado de fora da classe.
- * void: O método não retorna nada.
- * salvarCSV: Nome do método.
- Aqui está o ponto importante.
- 
- List<? extends Salvar> lista
-Significa:
-“aceita qualquer lista de objetos que implementem a interface Salvar (ou subclasses, se fosse uma classe).”
-Exemplo:
-
-List<Livro> livros;        // ok (Livro implementa Salvar)
-List<Leitor> leitores;     // ok
-List<Emprestimo> emprestimos; // ok
-
-Se você colocasse List<Salvar> em vez de List<? extends Salvar>, o método não aceitaria List<Livro> direto 
-— teria que converter a lista.
-Então esse ? extends Salvar é um curinga genérico (“wildcard”) que diz:
-“qualquer tipo que seja Salvar serve”.
-
- * String nomeArquivo - Nome do arquivo onde o CSV será salvo.
-
- * throws IOException - Informa que o método pode lançar uma exceção de entrada/saída (erro ao gravar o arquivo).
-	Quem chamar o método é obrigado a tratar ou propagar essa exceção.
-*/
 public class CSVUtil {
 	
 	/*METODO PARA SALVAR EM ARQUIVO .CSV*/
+	/*RESPONSAVEL POR SALVAR OS DADOS EM ARQUIVO*/
+	/*Esse método público, que não retorna nada, recebe uma
+	 * lista de qualquer tipo que implemente Exportavel e um 
+	 * nome de arquivo, grava tudo em CSV, e pode lançar uma 
+	 * IOException se der erro no processo.*/
+
+	/*EXPLICACAO DO METODO
+	 * 
+	 * public: O método pode ser chamado de fora da classe.
+	 * void: O método não retorna nada.
+	 * salvarCSV: Nome do método.
+	 Aqui está o ponto importante.
+	 
+	 List<? extends Salvar> lista
+	Significa:
+	“aceita qualquer lista de objetos que implementem a interface Salvar (ou subclasses, se fosse uma classe).”
+	Exemplo:
+
+	List<Livro> livros;        // ok (Livro implementa Salvar)
+	List<Leitor> leitores;     // ok
+	List<Emprestimo> emprestimos; // ok
+
+	Se você colocasse List<Salvar> em vez de List<? extends Salvar>, o método não aceitaria List<Livro> direto 
+	— teria que converter a lista.
+	Então esse ? extends Salvar é um curinga genérico (“wildcard”) que diz:
+	“qualquer tipo que seja Salvar serve”.
+
+	 * String nomeArquivo - Nome do arquivo onde o CSV será salvo.
+
+	 * throws IOException - Informa que o método pode lançar uma exceção de entrada/saída (erro ao gravar o arquivo).
+		Quem chamar o método é obrigado a tratar ou propagar essa exceção.
+	*/
 	public static void salvarCSV(List<? extends Salvar> lista, String nomeArquivo) throws IOException{
 		
 		try(BufferedWriter bw = new BufferedWriter(new FileWriter(nomeArquivo))){
@@ -102,7 +103,7 @@ public class CSVUtil {
 	}
 	
 
-	/*METODO PARA LER UM ARQUIVO DE EMPRESTIMO*/
+	/*METODO PARA LER UM ARQUIVO DE EMPRESTIMO*/  //estudar....
 	public static List<Emprestimo> lerEmprestimoCSV(String nomeArquivo,List<Leitor> leitores, 
             List<Livro> livros) throws IOException{
 		
@@ -142,33 +143,6 @@ public class CSVUtil {
 	}
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
